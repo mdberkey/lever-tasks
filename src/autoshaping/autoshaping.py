@@ -3,6 +3,14 @@ import time
 
 
 def main():
+    output = {
+        'Response': 0,
+        'Duration': 0.00,
+        'IRT': 0.00,
+        'Cumulative_time': 00.00,
+
+    }
+
     params = TaskHelper.read_params()
     ITI = params['ITI']
     reward_num = params['reward_num']
@@ -22,6 +30,7 @@ def main():
                 TaskHelper.dispense_pellet(reward_num)
             TaskHelper.stim_lights(on=False)
             time.sleep(ITI)
+    print(time.time())
 
 
 if __name__ == '__main__':
