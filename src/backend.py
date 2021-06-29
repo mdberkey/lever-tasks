@@ -1,7 +1,5 @@
 import pandas as pd
 import src.autoshaping.autoshaping as autoshaping
-
-
 # TODO: import other tasks
 
 
@@ -17,10 +15,15 @@ class Backend:
     @staticmethod
     def read_params():
         """
-        Calls TaskHelper.read_params() function
-        :return: TaskHelper.read_params() return value
+        Reads parameters from parameters.csv
+        :return: parameters in dictionary and dataframe format
         """
-        return TaskHelper.read_params()
+        params_df = pd.read_csv('parameters.csv')
+        params_dict = params_df.to_dict(orient='list')
+        for key in params_dict.keys():
+            params_dict[key] = params_dict[key][0]
+
+        return params_dict, params_df
 
     @staticmethod
     def set_params(params_df):
@@ -53,10 +56,3 @@ class Backend:
         """
         self.tasks[name].main()
         return True
-
-
-# TODO finish main
-if __name__ == '__main__':
-    backend = Backend()
-    params_dict, params_df = backend.read_params()
-    backend.set_params(params_df)

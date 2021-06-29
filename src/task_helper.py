@@ -1,6 +1,9 @@
-# TODO: finish class
+import pandas as pd
+import time
+
+
 class TaskHelper:
-    """ Helper functions for tasks"""
+    """ helper functions for tasks"""
 
     @staticmethod
     def read_params():
@@ -16,6 +19,17 @@ class TaskHelper:
         return params_dict, params_df
 
     @staticmethod
+    def output_ln(task_dir, data_ln=''):
+        """
+        Writes a line of data to a task's output.csv
+        :param task: task's data being recorded
+        :param data_ln: new line of data being appended
+        :return: None
+        """
+        with open(task_dir + '/output.csv', 'a+') as output_file:
+            output_file.write(','.join(map(str, data_ln)) + '\n')
+
+    @staticmethod
     def dispense_pellet(num=1):
         """
         Dispenses set number of food pellets
@@ -26,7 +40,7 @@ class TaskHelper:
         print('pellet')
 
     @staticmethod
-    def start_light(on=True):
+    def start_light(on):
         """
         Turns on/off start_light
         :param on: turns light on if True, off if False
@@ -36,17 +50,22 @@ class TaskHelper:
         print('start light: ' + on)
 
     @staticmethod
-    def stim_lights(on=(True, True)):
+    def stim_lights(left, right):
         """
         Turns on/off stim_lights
         :param on: (left light, right light) = (bool, bool)
         :return: None
         """
         #TODO: ADD hardware support for stim lights
-        print('stim lights:' + on)
+        print('stim lights: ' + left + right)
 
     @staticmethod
-    def levers(input_ratio=1):
+    def levers_out(left, right):
+        #TODO: ADD hardware support for levers out
+        return True
+
+    @staticmethod
+    def await_levers(input_ratio=1):
         """
         Deploys and gets input from levers
         :param input_ratio: Input ratio for levers
@@ -58,3 +77,8 @@ class TaskHelper:
             # TODO await lever press
             print('lever pressed')
         return True
+
+    @staticmethod
+    def await_retrieval():
+        #TODO: Await signal for pellet retreival
+        return time.time()
