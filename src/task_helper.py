@@ -1,6 +1,6 @@
 import pandas as pd
 import time
-
+from gpiozero import Motor
 
 class TaskHelper:
     """ helper functions for tasks"""
@@ -37,6 +37,8 @@ class TaskHelper:
         :return: None
         """
         #TODO: ADD hardware support for pellet dispenser
+        feeder = Motor(forward=4)
+        feeder.forward()
         print('pellet')
 
     @staticmethod
@@ -82,3 +84,7 @@ class TaskHelper:
     def await_retrieval():
         #TODO: Await signal for pellet retreival
         return time.time()
+
+if __name__ == '__main__':
+    helper = TaskHelper()
+    helper.dispense_pellet()
