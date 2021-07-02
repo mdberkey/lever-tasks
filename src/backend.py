@@ -1,5 +1,5 @@
 import pandas as pd
-import src.autoshaping.autoshaping as autoshaping
+import src.autoshape.autoshape as autoshape
 # TODO: import other tasks
 
 
@@ -9,7 +9,7 @@ class Backend:
     # TODO: add other tasks to self.tasks
     def __init__(self):
         self.tasks = {
-            'autoshaping': autoshaping,
+            'autoshape': autoshape,
         }
 
     @staticmethod

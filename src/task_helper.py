@@ -1,9 +1,21 @@
 import pandas as pd
 import time
-from gpiozero import Motor
+from gpiozero import LED, Motor, Button
+
 
 class TaskHelper:
     """ helper functions for tasks"""
+    def __init__(self):
+        self.io_dict = {
+            'feeder': Motor(forward=4),
+            'start_led': LED(27),
+            'left_led': LED(21),
+            'right_led': LED(13),
+            'left_lev_output': Motor(forward=23, backward=22),
+            'right_lev_output': Motor(forward=24, backward=25),
+            'left_lev_input': Button(12),
+            'right_lev_input': Button(5)
+        }
 
     @staticmethod
     def read_params():
@@ -29,61 +41,96 @@ class TaskHelper:
         with open(task_dir + '/output.csv', 'a+') as output_file:
             output_file.write(','.join(map(str, data_ln)) + '\n')
 
-    @staticmethod
-    def dispense_pellet(num=1):
+    def dispense_pellet(self, num=1):
         """
         Dispenses set number of food pellets
         :param num: number of pellets
         :return: None
         """
-        #TODO: ADD hardware support for pellet dispenser
-        feeder = Motor(forward=4)
-        feeder.forward()
-        print('pellet')
+        # TODO: test hardware support for pellet dispenser
+        for i in range(num):
+            self.io_dict['feeder'].forward()
+            print('pellet')
 
-    @staticmethod
-    def start_light(on):
+    def start_light(self, on):
         """
         Turns on/off start_light
         :param on: turns light on if True, off if False
         :return: None
         """
-        #TODO: ADD hardware support for start light
-        print('start light: ' + on)
+        # TODO: test hardware support for start light
+        light = self.io_dict['start_led']
+        if on:
+            light.on()
+            print('start light: on')
+        else:
+            light.off()
+            print('start light: off')
 
-    @staticmethod
-    def stim_lights(left, right):
+    def stim_lights(self, left, right):
         """
         Turns on/off stim_lights
         :param on: (left light, right light) = (bool, bool)
         :return: None
         """
-        #TODO: ADD hardware support for stim lights
-        print('stim lights: ' + left + right)
+        # TODO: test hardware support for stim lights
+        left_light = self.io_dict['left_led']
+        right_light = self.io_dict['right_led']
+        if left:
+            left_light.on()
+            print('left light: on')
+        else:
+            left_light.off()
+            print('left light: off')
+        
+        if right:
+            right_light.on()
+            print('right light: on')
+        else:
+            right_light.off()
+            print('right light: off')
 
-    @staticmethod
-    def levers_out(left, right):
-        #TODO: ADD hardware support for levers out
+    def levers_output(self, left, right):
+        # TODO: test hardware support for levers out
+        left_lever = self.io_dict['left_lev_output']
+        right_lever = self.io_dict['right_lev_output']
+        if left:
+            left_lever.foward()
+            print('left lever: out')
+        else:
+            left_lever.backward()
+            print('left lever: in')
+
+        if right:
+            right_lever.forward()
+            print('right lever: out')
+        else:
+            right_lever.backward()
+            print('right lever: in')
+
         return True
 
-    @staticmethod
-    def await_levers(input_ratio=1):
+    def levers_input(self, timeout, ratio=1):
         """
         Deploys and gets input from levers
-        :param input_ratio: Input ratio for levers
+        :param ratio: Input ratio for levers
         :return: lever results
         """
-        #TODO: ADD hardware support for levers
-        # TODO levers come out
-        for i in range(input_ratio):
-            # TODO await lever press
-            print('lever pressed')
-        return True
+        left_lever = self.io_dict['left_lev_output']
+        right_lever = self.io_dict['right_lev_output']
+        counter = 0
 
-    @staticmethod
-    def await_retrieval():
-        #TODO: Await signal for pellet retreival
-        return time.time()
+        while time.time() < timeout:
+            if left_lever.is_pressed:
+                counter += 1
+                if counter >= ratio:
+                    return left_lever.held_time, 0
+            elif right_lever.is_pressed:
+                counter += 1
+                if counter >= ratio:
+                    return right_lever.held_time, 1
+        raise TimeoutError
+
 
 if __name__ == '__main__':
     helper = TaskHelper()

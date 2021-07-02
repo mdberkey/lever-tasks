@@ -61,7 +61,7 @@ class Frontend:
         for key, value in params.items():
             if key == 'schedule':
                 params_col.append([sg.Text(key, size=(25, 1)),
-                                   sg.InputCombo(['Autoshape', 'FR', 'FI', 'VR', 'VI', 'DRL', 'PR'], key=key,
+                                   sg.InputCombo(['autoshape', 'FR', 'FI', 'VR', 'VI', 'DRL', 'PR'], key=key,
                                                  default_value=value)])
             else:
                 params_col.append([sg.Text(key, size=(25, 1)), sg.InputText(value, key=key)])
