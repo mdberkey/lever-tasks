@@ -50,7 +50,6 @@ def main(testing=False):
                     'schedule': 0
                 }
                 output_df = output_df.append(output_row, ignore_index=True)
-
                 task_helper.output_ln('autoshape', output_df.loc[trial_num - 1])
                 if task_helper.levers_output(left=False, right=False, testing=testing):
                     task_helper.stim_lights(left=False, right=False, testing=testing)
