@@ -4,7 +4,7 @@ import pandas as pd
 from random import getrandbits
 
 
-def main(testing):
+def main(testing=False):
     output_df = pd.DataFrame.from_dict(
         {
             'response': [],

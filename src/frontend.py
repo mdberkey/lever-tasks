@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-import src.backend as be
+import backend as be
 import pandas as pd
 import os
 from shutil import copy
