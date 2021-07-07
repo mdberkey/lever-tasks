@@ -7,17 +7,20 @@ from random import randint
 class TaskHelper:
     """ helper functions for tasks"""
 
-    def poop(self):
-        self.io_dict = {
-            'feeder': Motor(forward=4),
-            'start_led': LED(27),
-            'left_led': LED(21),
-            'right_led': LED(13),
-            'left_lev_output': Motor(forward=23, backward=22),
-            'right_lev_output': Motor(forward=24, backward=25),
-            'left_lev_input': Button(12),
-            'right_lev_input': Button(5)
-        }
+    def __init__(self, testing=True):
+        if testing:
+            self.io_dict = {}
+        else:
+            self.io_dict = {
+                'feeder': Motor(forward=4),
+                'start_led': LED(27),
+                'left_led': LED(21),
+                'right_led': LED(13),
+                'left_lev_output': Motor(forward=23, backward=22),
+                'right_lev_output': Motor(forward=24, backward=25),
+                'left_lev_input': Button(12),
+                'right_lev_input': Button(5)
+            }
 
     @staticmethod
     def read_params():

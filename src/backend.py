@@ -1,5 +1,5 @@
 import pandas as pd
-import autoshape.autoshape
+import autoshape.autoshape as autoshape
 # TODO: import other tasks
 
 
