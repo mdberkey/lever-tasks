@@ -1,5 +1,6 @@
 import pandas as pd
 import autoshape.autoshape as autoshape
+import fixed_ratio.fixed_ratio as fixed_ratio
 # TODO: import other tasks
 
 
@@ -10,6 +11,7 @@ class Backend:
     def __init__(self):
         self.tasks = {
             'autoshape': autoshape,
+            'FR': fixed_ratio
         }
 
     @staticmethod

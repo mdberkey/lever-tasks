@@ -4,7 +4,7 @@ import pandas as pd
 from random import getrandbits
 
 
-def main(testing=False):
+def main(testing=True):
     output_df = pd.DataFrame.from_dict(
         {
             'response': [],
@@ -17,8 +17,9 @@ def main(testing=False):
             'schedule': []
         }
     )
+    
     # Header Line
-    task_helper = TaskHelper(testing=True)
+    task_helper = TaskHelper(testing=testing)
     task_helper.output_ln('autoshape', output_df.keys())
 
     params = task_helper.read_params()[0]

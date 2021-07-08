@@ -166,7 +166,6 @@ class TaskHelper:
         :param testing: allows testing of tasks with assumption that hardware works
         :return: lever results
         """
-        print(timeout)
         if testing:
             counter = 0
             timeout = time.time() + timeout
