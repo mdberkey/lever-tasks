@@ -1,7 +1,6 @@
 from task_helper import TaskHelper
 import time
 import pandas as pd
-from random import getrandbits
 
 
 def main(testing=True):
@@ -27,9 +26,9 @@ def main(testing=True):
     task_helper.start_light(on=True, testing=testing)
 
     start = time.time()
-    length = time.time() + params['session_length']
-    while time.time() < length:
-        task_helper.stim_lights(left=True, right=True, testing=testing)
+    task_helper.stim_lights(left=True, right=True, testing=testing)
+
+    while True:
         if task_helper.levers_output(left=True, right=True, testing=testing):
             try:
                 duration, lever = task_helper.levers_input(timeout=length - time.time(), ratio=params['schedule_num'],

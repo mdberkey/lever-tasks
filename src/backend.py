@@ -1,6 +1,9 @@
+import time
+
 import pandas as pd
 import autoshape.autoshape as autoshape
 import fixed_ratio.fixed_ratio as fixed_ratio
+import multiprocessing
 # TODO: import other tasks
 
 
@@ -11,7 +14,7 @@ class Backend:
     def __init__(self):
         self.tasks = {
             'autoshape': autoshape,
-            'FR': fixed_ratio
+            'fixed_ratio': fixed_ratio
         }
 
     @staticmethod
@@ -56,5 +59,21 @@ class Backend:
         :param name: Name of task dir and .py file
         :return: True if task completed
         """
-        self.tasks[name].main()
-        return True
+        params = self.read_params()[0]
+
+        proc = multiprocessing.Process(target=self.task_process, name='task_process', args=(name, params,))
+        proc.start()
+        print('sleep')
+        time.sleep(params['session_length'])
+        if proc.is_alive():
+            print('Terminating task.')
+            proc.terminate()
+            proc.join()
+
+        print('Task completed.')
+
+    def task_process(self, name, params):
+        """
+        Helper method for start_task
+        """
+        self.tasks[name].main(params)

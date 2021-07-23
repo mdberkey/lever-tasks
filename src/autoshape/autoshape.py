@@ -1,10 +1,9 @@
 from task_helper import TaskHelper
-import time
 import pandas as pd
-from random import getrandbits
+import time
 
 
-def main(testing=True):
+def main(params, testing=True):
     output_df = pd.DataFrame.from_dict(
         {
             'response': [],
@@ -17,24 +16,22 @@ def main(testing=True):
             'schedule': []
         }
     )
-    
+
     # Header Line
     task_helper = TaskHelper(testing=testing)
     task_helper.output_ln('autoshape', output_df.keys())
 
-    params = task_helper.read_params()[0]
     initial_trials = True
     trial_num = 1
     task_helper.start_light(on=True, testing=testing)
 
     start = time.time()
-    length = time.time() + params['session_length']
-    while time.time() < length:
+    while True:
         if initial_trials:
             task_helper.stim_lights(left=True, right=True, testing=testing)
             if task_helper.levers_output(left=True, right=True, testing=testing):
                 try:
-                    duration, lever = task_helper.levers_input(timeout=length - time.time(), testing=testing)
+                    duration, lever = task_helper.levers_input(testing=testing)
                     task_helper.dispense_pellet(num=params['reward_num'], testing=testing)
                 except TimeoutError:
                     duration = None
@@ -59,4 +56,4 @@ def main(testing=True):
 
 
 if __name__ == '__main__':
-    main(testing=True)
+    main(params=TaskHelper.read_params()[0])

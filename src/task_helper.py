@@ -158,7 +158,7 @@ class TaskHelper:
 
         return True
 
-    def levers_input(self, timeout, ratio=1, testing=False):
+    def levers_input(self, timeout=900, ratio=1, testing=False):
         """
         Deploys and gets input from levers
         :param timeout: time until lever is retracted and counted as not pressed
@@ -170,7 +170,9 @@ class TaskHelper:
             counter = 0
             timeout = time.time() + timeout
             while time.time() < timeout:
-                key = input('Awaiting lever press: ')
+                time.sleep(randint(0, 4))
+                key = 'h'
+                # key = input('Awaiting lever press: ')
                 if key == 'h':
                     counter += 1
                     if counter >= ratio:
