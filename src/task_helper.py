@@ -158,7 +158,7 @@ class TaskHelper:
 
         return True
 
-    def levers_input(self, timeout=900, ratio=1, testing=False):
+    def levers_input(self, timeout=180, ratio=1, testing=False):
         """
         Deploys and gets input from levers
         :param timeout: time until lever is retracted and counted as not pressed

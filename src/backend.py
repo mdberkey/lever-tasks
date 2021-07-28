@@ -1,9 +1,11 @@
 import time
-
 import pandas as pd
 import autoshape.autoshape as autoshape
 import fixed_ratio.fixed_ratio as fixed_ratio
 import multiprocessing
+from task_queue import TaskQueue
+
+
 # TODO: import other tasks
 
 
@@ -16,6 +18,7 @@ class Backend:
             'autoshape': autoshape,
             'fixed_ratio': fixed_ratio
         }
+        self.task_queue = TaskQueue(10)
 
     @staticmethod
     def read_params():
@@ -53,13 +56,13 @@ class Backend:
 
         return output_dict, output_df
 
-    def start_task(self, name):
+    def start_task(self, params=None):
         """
-        Starts specified task
-        :param name: Name of task dir and .py file
-        :return: True if task completed
+        Starts task specified by parameters
         """
-        params = self.read_params()[0]
+        if not params:
+            params = self.read_params()[0]
+        name = params['schedule']
 
         proc = multiprocessing.Process(target=self.task_process, name='task_process', args=(name, params,))
         proc.start()
@@ -71,9 +74,26 @@ class Backend:
             proc.join()
 
         print('Task completed.')
+        return True
 
     def task_process(self, name, params):
         """
         Helper method for start_task
         """
         self.tasks[name].main(params)
+
+    def queue_task(self):
+        """
+        Queues task specified by parameters
+        """
+        params = self.read_params()[0]
+        self.task_queue.enqueue(params)
+        return True
+
+    def start_queue(self):
+        """
+        Starts task Queue
+        """
+        for i in range(self.task_queue.size):
+            self.start_task(params=self.task_queue.dequeue())
+        return True

@@ -31,8 +31,7 @@ def main(testing=True):
     while True:
         if task_helper.levers_output(left=True, right=True, testing=testing):
             try:
-                duration, lever = task_helper.levers_input(timeout=length - time.time(), ratio=params['schedule_num'],
-                                                           testing=testing)
+                duration, lever = task_helper.levers_input(ratio=params['schedule_num'], testing=testing)
                 task_helper.dispense_pellet(num=params['reward_num'], testing=testing)
             except TimeoutError:
                 duration = None

@@ -9,7 +9,7 @@ class Frontend:
     """ frontend GUI """
 
     def __init__(self, backend=be.Backend(), size=(200, 100), font='Helvetica',
-                 header_font='helvetica 15 underline bold', pad=[10, 10]):
+                 header_font='helvetica 15 underline bold', pad=(10, 10)):
         self.backend = backend
         self.size = size
         self.font = font
@@ -26,6 +26,7 @@ class Frontend:
         button_col = [
             [sg.Text('Options', font=self.header_font)],
             [sg.Button('Lever Tasks', pad=self.pad)],
+            [sg.Button('Task Queue', pad=self.pad)],
             [sg.Button('Export Data', pad=self.pad)],
             [sg.Button('Delete Data', pad=self.pad)],
             [sg.Button('QUIT', pad=self.pad)]
@@ -49,6 +50,8 @@ class Frontend:
                 self.delete_data(tasks.keys())
             elif event == 'Lever Tasks':
                 self.params_menu()
+            elif event == 'Task Queue':
+                self.queue_menu()
         main_window.close()
 
     def params_menu(self):
@@ -65,12 +68,14 @@ class Frontend:
                                                  default_value=value)])
             else:
                 params_col.append([sg.Text(key, size=(25, 1)), sg.InputText(value, key=key)])
-
-        layout = [[sg.Column(params_col)], [sg.Button('Back to Main Menu'), sg.Button('Confirm Parameters')],
-                  [sg.Text('Note: You must \'Confirm Parameters\' before starting task.')]]
-
         start_button = sg.Button('Start Task', disabled=True, key='ST')
-        layout[1].append(start_button)
+        queue_button = sg.Button('Enqueue Task', disabled=True, key='QT')
+        layout = [[sg.Column(params_col)], [
+            sg.Button('Back to Main Menu'),
+            sg.Button('Confirm Parameters'),
+            start_button,
+            queue_button,
+        ], [sg.Text('Note: You must \'Confirm Parameters\' before starting or enqueuing a task.')]]
 
         params_window = sg.Window('Parameters', layout, margins=self.size, font=self.font)
         while True:
@@ -95,17 +100,24 @@ class Frontend:
                     start_button.update(disabled=False)
                 except UnboundLocalError:
                     pass
+                try:
+                    queue_button.update(disabled=False)
+                except UnboundLocalError:
+                    pass
             elif event == 'ST':
-                task = self.backend.read_params()[0]['schedule']
-                if self.backend.start_task(name=task):
+                if self.backend.start_task():
                     sg.Popup('Task Completed.', font=self.font)
+            elif event == 'QT':
+                if self.backend.queue_task():
+                    sg.Popup('Task Enqueued.', font=self.font)
+
         params_window.close()
 
     def export_data(self, tasks):
         """
         Exports output.csv files to expored_data folder.
         :param tasks: list of tasks names
-        :return:
+        :return: None
         """
         export_tasks = []
         for dir in tasks:
@@ -173,6 +185,37 @@ class Frontend:
                 sg.Popup('Data Deleted', font=self.font)
                 break
         window.close()
+
+    def queue_menu(self):
+        queue = self.backend.task_queue
+
+        if queue.is_empty():
+            queue_col = [[sg.Text('Queue is empty.')]]
+        else:
+            queue_col = [
+                [sg.Text('Queue Size: ' + str(queue.size), font=self.font)],
+                [sg.Text('Front of Queue: ' + queue.que_front()['schedule'], font=self.font)],
+                [sg.Text('Back of Queue: ' + queue.que_rear()['schedule'], font=self.font)]
+            ]
+
+        layout = [[sg.Column(queue_col)], [
+            sg.Button('Back to Main Menu'),
+            sg.Button('Start Queue', key='SQ'),
+        ], [sg.Text('Note: New tasks begin immediately after one another.')]]
+
+        params_window = sg.Window('Task Queue', layout, margins=self.size, font=self.font)
+        while True:
+            event, values = params_window.read()
+
+            if event == 'Back to Main Menu' or event == sg.WIN_CLOSED:
+                break
+            elif event == 'SQ':
+                if queue.is_empty():
+                    pass
+                elif self.backend.start_queue():
+                    sg.Popup('Queue Completed.', font=self.font)
+
+        params_window.close()
 
 
 if __name__ == '__main__':
