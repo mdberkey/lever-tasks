@@ -36,10 +36,10 @@ class TaskHelper:
         return params_dict, params_df
 
     @staticmethod
-    def output_ln(task_dir, data_ln=''):
+    def output_ln(task_dir: str, data_ln=''):
         """
         Writes a line of data to a task's output.csv
-        :param task: task's data being recorded
+        :param task_dir: task's directory
         :param data_ln: new line of data being appended
         :return: None
         """
@@ -53,16 +53,20 @@ class TaskHelper:
         :param testing: allows testing of tasks with assumption that hardware works
         :return: None
         """
+        if num == 1:
+            print('Dispensing 1 pellet.', end='')
+        else:
+            print(f'Dispensing {num} pellets... ', end='')
+
         if testing:
-            for i in range(num):
-                print('pellet')
+            pass
         else:
             # TODO: test hardware support for pellet dispenser
             for i in range(num):
                 self.io_dict['feeder'].forward()
-                print('pellet')
+        print('Done.')
 
-    def start_light(self, on, testing=False):
+    def start_light(self, on: bool, testing=False):
         """
         Turns on/off start_light
         :param on: turns light on if True, off if False
@@ -84,7 +88,7 @@ class TaskHelper:
                 light.off()
                 print('start light: off')
 
-    def stim_lights(self, left, right, testing=False):
+    def stim_lights(self, left: bool, right: bool, testing=False):
         """
         Turns on/off stim_lights
         :param left: left light on if true
@@ -120,7 +124,7 @@ class TaskHelper:
                 right_light.off()
                 print('right light: off')
 
-    def levers_output(self, left, right, testing=False):
+    def levers_output(self, left: bool, right: bool, testing=False):
         """
         Deploys/retracts levers
         :param left: left lever out if true
@@ -158,23 +162,29 @@ class TaskHelper:
 
         return True
 
-    def levers_input(self, timeout=180, ratio=1, testing=False):
+    def levers_input(self, timeout=180, ratio=1, interval=0, testing=False):
         """
         Deploys and gets input from levers
         :param timeout: time until lever is retracted and counted as not pressed
         :param ratio: Input ratio for levers
+        :param interval: Interval time between lever press and food output
         :param testing: allows testing of tasks with assumption that hardware works
         :return: lever results
         """
         if testing:
             counter = 0
             timeout = time.time() + timeout
+            dur_list = []
+
+            # TODO add ability to get every lever press as they come + ratio/interval problem
             while time.time() < timeout:
                 time.sleep(randint(0, 4))
                 key = 'h'
                 # key = input('Awaiting lever press: ')
+                time.sleep(interval)
                 if key == 'h':
                     counter += 1
+
                     if counter >= ratio:
                         return randint(0, 5), 0
                 elif key == 'l':
@@ -197,6 +207,10 @@ class TaskHelper:
                     if counter >= ratio:
                         return right_lever.held_time, 1
             raise TimeoutError
+
+    @staticmethod
+    def calc_func(func: str, x: int):
+        return int(eval(func))
 
 
 if __name__ == '__main__':

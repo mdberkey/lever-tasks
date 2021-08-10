@@ -1,2 +1,2 @@
-subject,date,code,initials,schedule,schedule_num,session_length,time_out,ITI,reward_num,reward_delay
-bob,05/14/00,rm2054,mdb,FR,3,60,5,1,3,5
+subject,date,code,initials,schedule,ratio_function,interval_function,session_length,time_out,ITI,reward_num
+bob,05/14/00,rm2054,mdb,variable_interval,3,3*x,60,5,1,3

@@ -31,7 +31,7 @@ def main(params, testing=True):
             task_helper.stim_lights(left=True, right=True, testing=testing)
             if task_helper.levers_output(left=True, right=True, testing=testing):
                 try:
-                    duration, lever = task_helper.levers_input(testing=testing)
+                    duration, lever = task_helper.levers_input(timeout=params['time_out'], testing=testing)
                     task_helper.dispense_pellet(num=params['reward_num'], testing=testing)
                 except TimeoutError:
                     duration = None

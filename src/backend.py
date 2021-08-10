@@ -1,9 +1,10 @@
 import time
 import pandas as pd
-import autoshape.autoshape as autoshape
-import fixed_ratio.fixed_ratio as fixed_ratio
 import multiprocessing
 from task_queue import TaskQueue
+import autoshape.autoshape as autoshape
+import fixed_ratio.fixed_ratio as fixed_ratio
+import fixed_interval.fixed_interval as fixed_interval
 
 
 # TODO: import other tasks
@@ -16,9 +17,11 @@ class Backend:
     def __init__(self):
         self.tasks = {
             'autoshape': autoshape,
-            'fixed_ratio': fixed_ratio
+            'fixed_ratio': fixed_ratio,
+            'fixed_interval': fixed_interval,
+
         }
-        self.task_queue = TaskQueue(10)
+        self.task_queue = TaskQueue(50)
 
     @staticmethod
     def read_params():
@@ -34,7 +37,7 @@ class Backend:
         return params_dict, params_df
 
     @staticmethod
-    def set_params(params_df):
+    def set_params(params_df: pd.DataFrame):
         """
         Writes new parameters to parameters.csv
         :param params_df: New parameters dataframe
@@ -63,32 +66,36 @@ class Backend:
         if not params:
             params = self.read_params()[0]
         name = params['schedule']
+        length = params['session_length']
 
         proc = multiprocessing.Process(target=self.task_process, name='task_process', args=(name, params,))
         proc.start()
-        print('sleep')
-        time.sleep(params['session_length'])
+        print(f'Task timer started: {length} seconds remaining.')
+        time.sleep(length)
+
         if proc.is_alive():
-            print('Terminating task.')
+            print(f'Terminating task. {length} seconds elapsed.')
             proc.terminate()
             proc.join()
 
         print('Task completed.')
         return True
 
-    def task_process(self, name, params):
+    def task_process(self, name: str, params: pd.DataFrame):
         """
         Helper method for start_task
         """
         self.tasks[name].main(params)
 
-    def queue_task(self):
+    def enqueue_task(self):
         """
-        Queues task specified by parameters
+        enqueues task specified by parameters
         """
         params = self.read_params()[0]
-        self.task_queue.enqueue(params)
-        return True
+        if self.task_queue.enqueue(params):
+            return True
+        else:
+            return False
 
     def start_queue(self):
         """
@@ -97,3 +104,13 @@ class Backend:
         for i in range(self.task_queue.size):
             self.start_task(params=self.task_queue.dequeue())
         return True
+
+    def get_queue_size(self):
+        """
+        return: current size of task queue
+        """
+        return self.task_queue.size
+
+    @staticmethod
+    def calc_func(func: str, x: int):
+        return int(eval(func))

@@ -1,3 +1,5 @@
+import sched
+
 import PySimpleGUI as sg
 import backend as be
 import pandas as pd
@@ -54,6 +56,7 @@ class Frontend:
                 self.queue_menu()
         main_window.close()
 
+    # TODO: Get names/info for DRL and PR (line 69)
     def params_menu(self):
         """
         Menu for chaning parameters
@@ -64,7 +67,8 @@ class Frontend:
         for key, value in params.items():
             if key == 'schedule':
                 params_col.append([sg.Text(key, size=(25, 1)),
-                                   sg.InputCombo(['autoshape', 'FR', 'FI', 'VR', 'VI', 'DRL', 'PR'], key=key,
+                                   sg.InputCombo(['autoshape', 'fixed_ratio', 'fixed_interval', 'variable_ratio',
+                                                  'variable_interval', 'DRL', 'PR'], key=key,
                                                  default_value=value)])
             else:
                 params_col.append([sg.Text(key, size=(25, 1)), sg.InputText(value, key=key)])
@@ -84,36 +88,62 @@ class Frontend:
             if event == 'Back to Main Menu' or event == sg.WIN_CLOSED:
                 break
             elif event == 'Confirm Parameters':
+                valid = True
                 for key, value in values.items():
                     if key == 'date':
+                        # checks if date is proper format
                         try:
                             assert (list(map(int, value.split('/'))))
                         except ValueError:
                             sg.Popup('Parameter Error: Please enter date format as: \'mm/dd/yy\'', font=self.font)
+                            valid = False
                     elif key == 'schedule':
                         if not value:
                             sg.Popup('Parameter Error: Please enter a schedule.', font=self.font)
+                            valid = False
+                    elif key == 'ratio_function' or key == 'interval_function':
+                        # checks if functions are valid
+                        try:
+                            assert self.backend.calc_func(value, 1)
+                        except SyntaxError:
+                            sg.Popup('Parameter Error: Please enter a valid math function (with x as the variable) for ' + key)
+                            valid = False
+
+                        # checks if functions match with schedule
+                        schedule = values['schedule'][0]
+                        if key == 'ratio_function':
+                            if 'x' in value and not schedule == 'variable_ratio':
+                                sg.Popup('Parameter Error: ratio_function param: ' + value + ' is incompatible with schedule param: ' + schedule)
+                                valid = False
+                        elif key == 'interval_function':
+                            if 'x' in value and not schedule == 'variable_interval':
+                                sg.Popup('Parameter Error: interval_function param: ' + value + ' is incompatible with schedule param: ' + schedule)
+                                valid = False
+
                     values[key] = [value]
 
-                self.backend.set_params(pd.DataFrame.from_dict(values, orient='columns'))
-                try:
-                    start_button.update(disabled=False)
-                except UnboundLocalError:
-                    pass
-                try:
-                    queue_button.update(disabled=False)
-                except UnboundLocalError:
-                    pass
+                if valid:
+                    self.backend.set_params(pd.DataFrame.from_dict(values, orient='columns'))
+                    try:
+                        start_button.update(disabled=False)
+                    except UnboundLocalError:
+                        pass
+                    try:
+                        queue_button.update(disabled=False)
+                    except UnboundLocalError:
+                        pass
             elif event == 'ST':
                 if self.backend.start_task():
                     sg.Popup('Task Completed.', font=self.font)
             elif event == 'QT':
-                if self.backend.queue_task():
+                if self.backend.enqueue_task():
                     sg.Popup('Task Enqueued.', font=self.font)
+                else:
+                    sg.Popup(f'Queue is full at: {self.backend.get_queue_size()}')
 
         params_window.close()
 
-    def export_data(self, tasks):
+    def export_data(self, tasks: list):
         """
         Exports output.csv files to expored_data folder.
         :param tasks: list of tasks names
@@ -152,7 +182,7 @@ class Frontend:
                 break
         window.close()
 
-    def delete_data(self, tasks):
+    def delete_data(self, tasks: list):
         """
         Clears output.csv files from every task's folder
         :param tasks: list of task names
