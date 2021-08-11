@@ -5,6 +5,7 @@ from task_queue import TaskQueue
 import autoshape.autoshape as autoshape
 import fixed_ratio.fixed_ratio as fixed_ratio
 import fixed_interval.fixed_interval as fixed_interval
+from re import sub
 
 
 # TODO: import other tasks
@@ -113,4 +114,7 @@ class Backend:
 
     @staticmethod
     def calc_func(func: str, x: int):
+        # regex to clean up math expression
+        func = sub(r'(\d+|x)(x)', r'\1*\2', func)
+        # returns evaluated python result
         return int(eval(func))

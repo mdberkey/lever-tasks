@@ -2,6 +2,7 @@ import pandas as pd
 import time
 from gpiozero import LED, Motor, Button, GPIOPinMissing
 from random import randint
+from re import sub
 
 
 class TaskHelper:
@@ -177,6 +178,7 @@ class TaskHelper:
             dur_list = []
 
             # TODO add ability to get every lever press as they come + ratio/interval problem
+            # Answer: Build a helper function to handle multiple ratio / intervals
             while time.time() < timeout:
                 time.sleep(randint(0, 4))
                 key = 'h'
@@ -210,6 +212,9 @@ class TaskHelper:
 
     @staticmethod
     def calc_func(func: str, x: int):
+        # regex to clean up math expression
+        func = sub(r'(\d+|x)(x)', r'\1*\2', func)
+        # returns evaluated python result
         return int(eval(func))
 
 

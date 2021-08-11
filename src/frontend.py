@@ -1,5 +1,3 @@
-import sched
-
 import PySimpleGUI as sg
 import backend as be
 import pandas as pd
@@ -105,8 +103,10 @@ class Frontend:
                         # checks if functions are valid
                         try:
                             assert self.backend.calc_func(value, 1)
-                        except SyntaxError:
-                            sg.Popup('Parameter Error: Please enter a valid math function (with x as the variable) for ' + key)
+                        except SyntaxError or TypeError:
+                            sg.Popup('Parameter Error: Please enter a valid math expression for ' + key
+                                     + '\nNote: You must use python syntax for math expressions and use \'x\' as the '
+                                       'variable. Ex: 3x + 5')
                             valid = False
 
                         # checks if functions match with schedule
