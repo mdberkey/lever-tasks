@@ -49,7 +49,7 @@ class TaskHelper:
     @staticmethod
     def relay_cmd(self, command: str):
         # Subprocess call for sudo permission
-        call('sudo', 'python3', 'usb_relay/relay_cdll.py')
+        call(['sudo', 'python3', 'usb_relay/relay_cdll.py'])
 
 
     def dispense_pellet(self, num=1, testing=False):
@@ -227,6 +227,6 @@ class TaskHelper:
 if __name__ == '__main__':
     try:
         helper = TaskHelper()
-        helper.relay('test')
+        helper.relay_cmd('test')
     except GPIOPinMissing:
         print('ERROR: GPIO pins are missing. Please set up GPIO terminal.')
