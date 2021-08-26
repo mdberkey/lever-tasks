@@ -46,8 +46,9 @@ class TaskHelper:
         """
         with open(task_dir + '/output.csv', 'a+') as output_file:
             output_file.write(','.join(map(str, data_ln)) + '\n')
+
     @staticmethod
-    def relay_cmd(self, command: str):
+    def relay_cmd(command: str):
         # Subprocess call for sudo permission
         call(['sudo', 'python3', 'usb_relay/relay_cdll.py'])
 

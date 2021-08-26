@@ -166,11 +166,11 @@ int main( int argc, char **argv )
     }
 
     // We are done with our device and will now release the interface we previously claimed as well as the device
-    libusb_release_interface( device_handle, 0 );
-    libusb_close( device_handle );
+    //libusb_release_interface( device_handle, 0 );
+    //libusb_close( device_handle );
 
     // Shutdown libusb
-    libusb_exit( NULL );
+    //libusb_exit( NULL );
 
     return 0;
 }
