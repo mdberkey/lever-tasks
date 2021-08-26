@@ -64,6 +64,7 @@ class TaskHelper:
         else:
             # TODO: test hardware support for pellet dispenser
             for i in range(num):
+                #TODO 
                 self.io_dict['feeder'].forward()
         print('Done.')
 
