@@ -3,6 +3,7 @@ import time
 from gpiozero import LED, Motor, Button, GPIOPinMissing
 from random import randint
 from re import sub
+from ctypes import CDLL
 
 
 class TaskHelper:
@@ -22,6 +23,7 @@ class TaskHelper:
                 'left_lev_input': Button(12),
                 'right_lev_input': Button(5)
             }
+        self.relay = CDLL('/usb_relay/relay.so')
 
     @staticmethod
     def read_params():
@@ -46,6 +48,9 @@ class TaskHelper:
         """
         with open(task_dir + '/output.csv', 'a+') as output_file:
             output_file.write(','.join(map(str, data_ln)) + '\n')
+
+    def relay_cmd(self, command: str):
+        print(self.relay.main())
 
     def dispense_pellet(self, num=1, testing=False):
         """
