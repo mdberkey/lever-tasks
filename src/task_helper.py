@@ -3,8 +3,7 @@ import time
 from gpiozero import LED, Motor, Button, GPIOPinMissing
 from random import randint
 from re import sub
-from ctypes import CDLL
-
+from subprocess import call
 
 class TaskHelper:
     """ helper functions for tasks"""
@@ -23,7 +22,6 @@ class TaskHelper:
                 'left_lev_input': Button(12),
                 'right_lev_input': Button(5)
             }
-        self.relay = CDLL('/usb_relay/relay.so')
 
     @staticmethod
     def read_params():
@@ -48,9 +46,11 @@ class TaskHelper:
         """
         with open(task_dir + '/output.csv', 'a+') as output_file:
             output_file.write(','.join(map(str, data_ln)) + '\n')
-
+    @staticmethod
     def relay_cmd(self, command: str):
-        print(self.relay.main())
+        # Subprocess call for sudo permission
+        call('sudo', 'python3', 'usb_relay/relay_cdll.py')
+
 
     def dispense_pellet(self, num=1, testing=False):
         """
@@ -227,5 +227,6 @@ class TaskHelper:
 if __name__ == '__main__':
     try:
         helper = TaskHelper()
+        helper.relay('test')
     except GPIOPinMissing:
         print('ERROR: GPIO pins are missing. Please set up GPIO terminal.')
