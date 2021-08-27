@@ -10,7 +10,7 @@
 #include <libusb-1.0/libusb.h>
 
 #define VENDOR_ID      0x0a07  // Ontrak vendor ID. This should never change
-#define PRODUCT_ID     200     // ADU200 product ID. Set this product ID to match your device.
+#define PRODUCT_ID     0x00c8     // ADU200 product ID. Set this product ID to match your device.
                                // Product IDs can be found at https://www.ontrak.net/Nodll.htm.
 
 //#define TRANSFER_SIZE    64  // Data transfer size is either 8 bytes (low-speed USB devices) or 64 bytes (full-speed USB devices).
@@ -150,7 +150,7 @@ int main( int argc, char **argv )
     // by the OS and need to be reset.
 
     // Send a command to request value of PORT A
-    //result = write_to_adu( device_handle, "RPA", 200 );
+    result = write_to_adu( device_handle, "RPA", 200 );
     if ( 0 == read_from_adu( device_handle, value_str, COUNT_OF(value_str), 200 ) ) // Read the result
     {
 		printf( "Read value as string: %s\n", value_str );
@@ -166,11 +166,11 @@ int main( int argc, char **argv )
     }
 
     // We are done with our device and will now release the interface we previously claimed as well as the device
-    //libusb_release_interface( device_handle, 0 );
-    //libusb_close( device_handle );
+    libusb_release_interface( device_handle, 0 );
+    libusb_close( device_handle );
 
     // Shutdown libusb
-    //libusb_exit( NULL );
+    libusb_exit( NULL );
 
     return 0;
 }
