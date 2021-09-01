@@ -163,6 +163,7 @@ int main( int argc, char **argv )
 		// and store it in the read_value pointer user argument
 		int value_int = atoi( value_str );
 		printf( "Read value as int: %i\n", value_int );
+		return value_int;
     }
 
     // We are done with our device and will now release the interface we previously claimed as well as the device

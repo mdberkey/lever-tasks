@@ -3,7 +3,7 @@ import time
 from gpiozero import LED, Motor, Button, GPIOPinMissing
 from random import randint
 from re import sub
-from subprocess import call
+from subprocess import call, check_output
 
 class TaskHelper:
     """ helper functions for tasks"""
@@ -48,9 +48,11 @@ class TaskHelper:
             output_file.write(','.join(map(str, data_ln)) + '\n')
 
     @staticmethod
-    def relay_cmd(command: str):
+    def relay_cmd(command: str) -> int:
+        if command == 'read_input':
+            print(check_output(['sudo', 'python3', 'usb_relay/relay_cdll.py']))
         # Subprocess call for sudo permission
-        call(['sudo', 'python3', 'usb_relay/relay_cdll.py'])
+        #call(['sudo', 'python3', 'usb_relay/relay_cdll.py'])
 
 
     def dispense_pellet(self, num=1, testing=False):
@@ -228,6 +230,7 @@ class TaskHelper:
 if __name__ == '__main__':
     try:
         helper = TaskHelper()
-        helper.relay_cmd('test')
+        while True:
+            helper.relay_cmd('read_input')
     except GPIOPinMissing:
         print('ERROR: GPIO pins are missing. Please set up GPIO terminal.')
